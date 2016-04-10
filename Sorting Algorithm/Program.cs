@@ -15,14 +15,17 @@ namespace Sorting_Algorithm
             return Comparer<T>.Default.Compare(first, second) < 0;
         }
 
+        public static int CompareTo<T>(T first, T second)
+        {
+            return Comparer<T>.Default.Compare(first, second);
+        }
+
         public static bool IsSorted<T>(T[] arr)
         {
             for (int i = 1; i < arr.Length; i++)
             {
                 if (Compare(arr[i], arr[i - 1]))
-                {
                     return false;
-                }
             }
             return true;
         }
@@ -32,14 +35,13 @@ namespace Sorting_Algorithm
             for (int i = lo; i < hi; i++)
             {
                 if (Compare(arr[i], arr[i + 1]))
-                {
                     return false;
-                }
             }
             return true;
         }
+
         public static void Swap<T>(T[] arr, int i, int j)
-        {    //swap 2 element (index i and j) in array
+        {   //swap 2 element (index i and j) in array
             T swap = arr[i];
             arr[i] = arr[j];
             arr[j] = swap;
@@ -94,7 +96,8 @@ namespace Sorting_Algorithm
                 for (int j = i + 1; j < n; j++)
                 {
                     count++;
-                    if (Compare(arr[j], arr[min])) min = j;
+                    if (Compare(arr[j], arr[min]))
+                        min = j;
                 }
                 Swap(arr, i, min);
             }
@@ -105,11 +108,11 @@ namespace Sorting_Algorithm
             count = 0;
             int n = arr.Length;
             for (int i = 0; i < n; i++)
-                for (int j = i; j > 0; j--)             //Compare current position with position before
+                for (int j = i; j > 0; j--)            //Compare current position with position before
                 {
                     count++;
                     if (Compare(arr[j], arr[j - 1]))   //Finding minimum of this 2 elements and 
-                        Swap(arr, j, j - 1);            //swap them!
+                        Swap(arr, j, j - 1);           //swap them!
                     else break;
                 }
         }
@@ -134,7 +137,8 @@ namespace Sorting_Algorithm
 
             while (shell[shellNum] < n)
             {
-                if (shell[shellNum + 1] < n) h = shell[++shellNum];
+                if (shell[shellNum + 1] < n)
+                    h = shell[++shellNum];
                 else break;
             }
             //h=3*h+1;  // 3x + 1 increment sequence - Standart Sequence
@@ -147,15 +151,17 @@ namespace Sorting_Algorithm
                         count++;
                         Swap(arr, j, j - h);    //swap them - Insertion Sort              
                     }
-                h = shell[--shellNum];      // move to next increment
+                h = shell[--shellNum];          // move to next increment
             }
         }
 
         public static T[] MergeSort<T>(T[] arr)
         {
             int n = arr.Length;
-            if (n == 1) return arr;
+            if (n == 1)
+                return arr;
             int mid = n / 2;
+
             return Merge(MergeSort(arr.Take(mid).ToArray()), MergeSort(arr.Skip(mid).ToArray()));
         }
 
@@ -173,9 +179,9 @@ namespace Sorting_Algorithm
                         merged[i] = left[lo++];
                 else
                     if (hi < right.Length)
-                    merged[i] = right[hi++];
-                else
-                    merged[i] = left[lo++];
+                        merged[i] = right[hi++];
+                    else
+                        merged[i] = left[lo++];
             }
             return merged;
         }
@@ -189,25 +195,109 @@ namespace Sorting_Algorithm
             for (int k = lo; k <= hi; k++)
             {
                 count++;
-                if (i > mid) arr[k] = aux[j++];
-                else if (j > hi) arr[k] = aux[i++];
-                else if (Compare(aux[j], aux[i])) arr[k] = aux[j++];
-                else arr[k] = aux[i++];
+                if      (i > mid)                   arr[k] = aux[j++];
+                else if (j > hi)                    arr[k] = aux[i++];
+                else if (Compare(aux[j], aux[i]))   arr[k] = aux[j++];
+                else                                arr[k] = aux[i++];
             }
         }
 
         public static void MergeSortRecursive<T>(T[] arr, T[] aux, int lo, int hi)
         {
             if (hi <= lo) return;
+
             int mid = lo + (hi - lo) / 2;
             MergeSortRecursive(arr, aux, lo, mid);
             MergeSortRecursive(arr, aux, mid + 1, hi);
+
+            if (!Compare(arr[mid + 1], arr[mid])) return;
             MergeRecursive(arr, aux, lo, mid, hi);
         }
         public static void MergeSortRecursive<T>(T[] arr)
         {
             T[] aux = new T[arr.Length];
             MergeSortRecursive(arr, aux, 0, arr.Length - 1);
+        }
+
+        public static int QSPartition<T>(T[] arr, int lo, int hi)
+        {
+            int left = lo, right = hi + 1;
+            while (true)
+            { //true
+                while (Compare(arr[++left], arr[lo]))
+                    if (left == hi) break;
+                while (Compare(arr[lo], arr[--right]))
+                    if (right == lo) break;
+                if (left >= right) break;
+                Swap(arr, left, right);
+            }
+            Swap(arr, lo, right);
+            return right;
+        }
+        public static void QuickSort<T>(T[] arr)
+        {
+            Shuffle(arr);
+            QuickSort(arr, 0, arr.Length - 1);
+        }
+        public static void QuickSort<T>(T[] arr, int lo, int hi)
+        {
+            if (hi <= lo) return;
+
+            int mid = lo + (hi - lo) / 2;
+            mid = QSMedian(arr, lo, mid, hi);
+            Swap(arr, lo, mid);
+
+            int index = QSPartition(arr, lo, hi);
+            QuickSort(arr, lo, index - 1);
+            QuickSort(arr, index + 1, hi);
+        }
+        public static int QSMedian<T>(T[] arr, int lo, int mid, int hi)
+        {
+            if (Compare(arr[lo], arr[mid]))
+                Swap(arr, lo, mid);
+            if (Compare(arr[mid], arr[hi]))
+                Swap(arr, lo, mid);
+            if (Compare(arr[lo], arr[hi]))
+                Swap(arr, lo, mid);
+            return mid;
+        }
+
+        public static T Select<T>(T[] arr, int k)
+        {
+            Shuffle(arr);
+            int lo = 0, hi = arr.Length - 1;
+
+            while (hi > lo)
+            {
+                int mid = QSPartition(arr, lo, hi);
+
+                if      (mid < k) lo = mid + 1;
+                else if (mid > k) hi = mid - 1;
+                else return arr[k];
+            }
+            return arr[k];
+        }
+
+        public static void QuickSort3<T>(T[] arr)
+        {
+            Shuffle(arr);
+            QuickSort3(arr, 0, arr.Length - 1);
+        }
+        public static void QuickSort3<T>(T[] arr, int lo, int hi)
+        {
+            if (hi <= lo) return;
+            int left = lo, right = hi;
+            T val = arr[lo];
+            int i = lo;
+
+            while (i <= right)
+            {
+                if      (CompareTo(arr[i], val) < 0) Swap(arr, left++, i++);
+                else if (CompareTo(arr[i], val) > 0) Swap(arr, i, right--);
+                else i++;
+            }
+            QuickSort3(arr, lo, left - 1);
+            QuickSort3(arr, right + 1, hi);
         }
 
 
@@ -224,6 +314,9 @@ namespace Sorting_Algorithm
             Console.WriteLine(" 3 - Test Shell sort;");
             Console.WriteLine(" 4 - Test Merge sort");
             Console.WriteLine(" 5 - Test Merge sort(recursive)");
+            Console.WriteLine(" 6 - Test Quick sort");
+            Console.WriteLine(" 7 - Test Quick sort with 3-way.");
+            Console.WriteLine(" 8 - Test Selection from array by index");
 
             Console.WriteLine(" P - Print an array;");
             Console.WriteLine(" E - Exit;");
@@ -302,6 +395,21 @@ namespace Sorting_Algorithm
                     case "5":
                         MergeSortRecursive(test);
                         Console.WriteLine("Merge Sort Recursive: Count = {0}", count);
+                        break;
+                    case "6":
+                        QuickSort(test);
+                        Console.WriteLine("QuickSort C: Count = {0}", count);
+                        break;
+                    case "7":
+                        QuickSort3(test);
+                        Console.WriteLine("QuickSort 3-way: Count = {0}", count);
+                        break;
+                    case "8":
+                        Console.Write("Set index of element K: ");
+                        string strIndexK = Console.ReadLine();
+                        int indexK = 0; //default
+                        if (int.TryParse(strIndexK, out indexK))
+                            Console.WriteLine("Element K(n) = {0}",Select(test,indexK-1).ToString());
                         break;
                     default:
                         Console.WriteLine("Try Again.");
