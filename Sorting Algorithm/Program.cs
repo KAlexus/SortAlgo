@@ -86,6 +86,18 @@ namespace Sorting_Algorithm
             }
         }
 
+        public static void Menu()
+        {
+            Console.WriteLine("========== Test Sorting Algorithms ==========");
+            Console.WriteLine(" 1 - Test Selection sort;");
+            Console.WriteLine(" 2 - Test Insertion sort;");
+            Console.WriteLine(" 3 - Test Shell sort;");
+            Console.WriteLine(" 4 - Test");
+            Console.WriteLine(" P - Print array;");
+            Console.WriteLine(" E - Exit;");
+            Console.WriteLine(" H - Help.");
+        }
+
         static void Main(string[] args)
         {
             bool exitFlag = true;
@@ -93,9 +105,10 @@ namespace Sorting_Algorithm
             int[] test = new int[] { 8, 1, 10, 7, 55, 24, 43, 88, 2, 313, 81, 134, 85, 17, 89, 255, 77, 13, 243, 454, 574, 446, 544, 4 };
             Console.WriteLine("UnSorted array:");
             MySortPrint(test);
-
+            Menu();
             while (exitFlag)
             {
+                Console.Write("Select an action: ");
                 string op = Console.ReadLine().Trim().ToLower();
                 switch (op)
                 {
@@ -106,6 +119,10 @@ namespace Sorting_Algorithm
                     case "p":
                         Console.WriteLine("Sorted array:");
                         MySortPrint(test);
+                        break;
+                    case "h":
+                        Console.Clear();
+                        Menu();                        
                         break;
                     case "1":
                         MySelectionSort(test);
@@ -120,7 +137,7 @@ namespace Sorting_Algorithm
                         Console.WriteLine("Shell Sort: Count = {0}", count);
                         break;
                     default:
-                        Console.WriteLine("Вы нажали неизвестную букву");
+                        Console.WriteLine("Try Again.");
                         break;
                 }                
             }
