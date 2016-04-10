@@ -15,20 +15,53 @@ namespace Sorting_Algorithm
             return Comparer<T>.Default.Compare(first, second) < 0;
         }
 
-        public static void MySortExchange<T>(T[] arr, int i, int j)
+        public static void Swap<T>(T[] arr, int i, int j)
         {    //swap 2 element (index i and j) in array
             T swap = arr[i];
             arr[i] = arr[j];
             arr[j] = swap;
         }
 
-        public static void MySortPrint<T>(T[] arr)
+        public static void SortPrint<T>(T[] arr)
         {
             foreach (T n in arr) Console.Write("{0} ", n);
             Console.WriteLine();
         }
 
-        public static void MySelectionSort<T>(T[] arr)
+        public static void Shuffle<T>(T[] arr)
+        {
+            count = 0;
+            int n = arr.Length;
+            Random rnd = new Random();
+
+            for (int i = 0; i < n; i++)
+            {
+                count++;
+                int shuffleIndex = rnd.Next(0, i);
+                Swap(arr, i, shuffleIndex);
+            }
+        }
+
+        public static void FillRandom(int[] arr, int min, int max)
+        {
+            int n = arr.Length;
+            Random rnd = new Random();
+            for (int i = 0; i < n; i++)
+            {
+                arr[i] = rnd.Next(min, max);
+            }
+        }
+        public static void FillRandom(double[] arr, int min, int max)
+        {
+            int n = arr.Length;
+            Random rnd = new Random();
+            for (int i = 0; i < n; i++)
+            {
+                arr[i] = rnd.Next(min, max - 1) + rnd.NextDouble();
+            }
+        }
+
+        public static void SelectionSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
@@ -40,30 +73,29 @@ namespace Sorting_Algorithm
                     count++;
                     if (Compare(arr[j], arr[min])) min = j;
                 }
-                MySortExchange(arr, i, min);
+                Swap(arr, i, min);
             }
         }
 
-        public static void MyInsertionSort<T>(T[] arr)
+        public static void InsertionSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
             for (int i = 0; i < n; i++)
-                for (int j = i; j > 0; j--)                 // Compare current position with position before
+                for (int j = i; j > 0; j--)             //Compare current position with position before
                 {
                     count++;
-                    if (Compare(arr[j], arr[j - 1]))
-                        //if (arr[j].CompareTo(arr[j-1])<0) //Finding minimum of this 2 elements and 
-                        MySortExchange(arr, j, j - 1);      //swap them!
+                    if (Compare(arr[j], arr[j - 1]))   //Finding minimum of this 2 elements and 
+                        Swap(arr, j, j - 1);            //swap them!
                     else break;
                 }
         }
 
-        public static void MyShellSort<T>(T[] arr)
+        public static void ShellSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
-            int[] shell = new int[] { 0, 1, 4, 10, 23, 57, 132, 301, 701, 1750 };  //последовательность Марцина Циура - A102549 в OEIS
+            int[] shell = new int[] { 0, 1, 4, 10, 23, 57, 132, 301, 701, 1750 };  //Марцина Циура (последовательность A102549 в OEIS)
             int shellNum = 0;
             int h = shell[1];
 
@@ -80,60 +112,81 @@ namespace Sorting_Algorithm
                     for (int j = i; j >= h && Compare(arr[j], arr[j - h]); j--)
                     {
                         count++;
-                        MySortExchange(arr, j, j - h);  //swap them - Insertion Sort              
+                        Swap(arr, j, j - h);    //swap them - Insertion Sort              
                     }
-                h = shell[--shellNum];                  // move to next increment
+                h = shell[--shellNum];      // move to next increment
             }
         }
+
 
         public static void Menu()
         {
             Console.WriteLine("========== Test Sorting Algorithms ==========");
+            Console.WriteLine(" S - Set array size;");
+            Console.WriteLine(" F - Fill an array by random values;");
             Console.WriteLine(" 1 - Test Selection sort;");
             Console.WriteLine(" 2 - Test Insertion sort;");
             Console.WriteLine(" 3 - Test Shell sort;");
             Console.WriteLine(" 4 - Test");
-            Console.WriteLine(" P - Print array;");
+            Console.WriteLine(" P - Print an array;");
             Console.WriteLine(" E - Exit;");
-            Console.WriteLine(" H - Help.");
+            Console.WriteLine(" C - Clear screen.");
         }
 
         static void Main(string[] args)
         {
             bool exitFlag = true;
  
-            int[] test = new int[] { 8, 1, 10, 7, 55, 24, 43, 88, 2, 313, 81, 134, 85, 17, 89, 255, 77, 13, 243, 454, 574, 446, 544, 4 };
-            Console.WriteLine("UnSorted array:");
-            MySortPrint(test);
+            int[] test = new int[100];
+            FillRandom(test, 0, 100);
+
             Menu();
+
             while (exitFlag)
             {
                 Console.Write("Select an action: ");
                 string op = Console.ReadLine().Trim().ToLower();
                 switch (op)
                 {
+                    case "s":
+                        Console.Write("Set array size: ");
+                        string str = Console.ReadLine();
+                        int size = 100; //default
+                        if (int.TryParse(str, out size))
+                            test = new int[size];
+                        FillRandom(test, 0, 100);
+                        break;
+                    case "f":
+                        Console.Write("Set min value: ");
+                        string strMin = Console.ReadLine();
+                        Console.Write("Set max value: ");
+                        string strMax = Console.ReadLine();
+                        int min = 0, max = 100; //default
+                        if (int.TryParse(strMin, out min) && int.TryParse(strMax, out max))
+                            FillRandom(test, min, max);
+                        break;
                     case "e":
                         Console.WriteLine("EXIT!");
                         exitFlag = false;
                         break;
                     case "p":
-                        Console.WriteLine("Sorted array:");
-                        MySortPrint(test);
+                        Console.WriteLine("Print array:");
+                        SortPrint(test);
                         break;
-                    case "h":
+                    case "c":
                         Console.Clear();
                         Menu();                        
                         break;
                     case "1":
-                        MySelectionSort(test);
+                        SelectionSort(test);
                         Console.WriteLine("Selection Sort: Count = {0}", count);
                         break;
                     case "2":
-                        MyInsertionSort(test);
+                        InsertionSort(test);
                         Console.WriteLine("Insertion Sort: Count = {0}", count);
                         break;
                     case "3":
-                        MyShellSort(test);
+                        ShellSort(test);
                         Console.WriteLine("Shell Sort: Count = {0}", count);
                         break;
                     default:
