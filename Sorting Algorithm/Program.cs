@@ -10,21 +10,25 @@ namespace Sorting_Algorithm
     {
         public static int count = 0;
 
-        public static void MySort(int[] arr)
+        public static bool Compare<T>(T first, T second)
         {
-            count = 0;
-            int n = arr.Length;
-            for (int i = 0; i < n; i++)
-                for (int j = i; j > 0; j--)
-                {
-                    count++;
-                    if (arr[j].CompareTo(arr[j - 1]) < 0)
-                        MySortExchange(arr, j, j - 1);
-                    else break;
-                }
+            return Comparer<T>.Default.Compare(first, second) < 0;
         }
 
-        public static void MySelectionSort(int[] arr)
+        public static void MySortExchange<T>(T[] arr, int i, int j)
+        {    //swap 2 element (index i and j) in array
+            T swap = arr[i];
+            arr[i] = arr[j];
+            arr[j] = swap;
+        }
+
+        public static void MySortPrint<T>(T[] arr)
+        {
+            foreach (T n in arr) Console.Write("{0} ", n);
+            Console.WriteLine();
+        }
+
+        public static void MySelectionSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
@@ -34,13 +38,13 @@ namespace Sorting_Algorithm
                 for (int j = i + 1; j < n; j++)
                 {
                     count++;
-                    if (arr[j].CompareTo(arr[min]) < 0) min = j;
+                    if (Compare(arr[j], arr[min])) min = j;
                 }
                 MySortExchange(arr, i, min);
             }
         }
 
-        public static void MyInsertionSort(int[] arr)
+        public static void MyInsertionSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
@@ -48,44 +52,38 @@ namespace Sorting_Algorithm
                 for (int j = i; j > 0; j--)                 // Compare current position with position before
                 {
                     count++;
-                    if (arr[j].CompareTo(arr[j - 1]) < 0)   //Finding minimum of this 2 elements and 
+                    if (Compare(arr[j], arr[j - 1]))
+                        //if (arr[j].CompareTo(arr[j-1])<0) //Finding minimum of this 2 elements and 
                         MySortExchange(arr, j, j - 1);      //swap them!
                     else break;
                 }
         }
 
-        public static void MyShellSort(int[] arr)
+        public static void MyShellSort<T>(T[] arr)
         {
             count = 0;
             int n = arr.Length;
+            int[] shell = new int[] { 0, 1, 4, 10, 23, 57, 132, 301, 701, 1750 };  //последовательность Марцина Циура - A102549 в OEIS
+            int shellNum = 0;
+            int h = shell[1];
 
-            int h = 1;
-
-            while (h < n / 3) h = 3 * h + 1;  // 3x + 1 increment sequence
+            while (shell[shellNum] < n)
+            {
+                if (shell[shellNum + 1] < n) h = shell[++shellNum];
+                else break;
+            }
+            //h=3*h+1;  // 3x + 1 increment sequence - Standart Sequence
 
             while (h >= 1)
             {
                 for (int i = h; i < n; i++)
-                    for (int j = i; j >= h && (arr[j].CompareTo(arr[j - h]) < 0); j--)
+                    for (int j = i; j >= h && Compare(arr[j], arr[j - h]); j--)
                     {
                         count++;
-                        MySortExchange(arr, j, j - h);      //swap them - Insertion Sort              
+                        MySortExchange(arr, j, j - h);  //swap them - Insertion Sort              
                     }
-                h = h / 3;                                // move to next increment
+                h = shell[--shellNum];                  // move to next increment
             }
-        }
-
-        public static void MySortExchange(int[] arr, int i, int j)
-        {
-            int swap = arr[i];
-            arr[i] = arr[j];
-            arr[j] = swap;
-        }
-
-        public static void MySortPrint(int[] arr)
-        {
-            foreach (int n in arr) Console.Write("{0} ", n);
-            Console.WriteLine();
         }
 
         static void Main(string[] args)
